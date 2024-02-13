@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
             constraintLayout.addView(button);
             buttonIds[i] = button.getId();
 
-            // Set constraints for the buttons (adjust as needed)
+            //Set constraints
             ConstraintSet buttonConstraintSet = new ConstraintSet();
             buttonConstraintSet.clone(constraintLayout);
 
