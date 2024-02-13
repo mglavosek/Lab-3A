@@ -15,7 +15,6 @@ public class MainActivity extends AppCompatActivity {
     private static final int COLS = 4;
 
     private ConstraintLayout constraintLayout;
-    private int[] buttonIds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
             constraintLayout.addView(button);
             buttonIds[i] = button.getId();
 
-            // Set constraints for the buttons (adjust as needed)
+            // Set constraints for the buttons
             ConstraintSet buttonConstraintSet = new ConstraintSet();
             buttonConstraintSet.clone(constraintLayout);
 
