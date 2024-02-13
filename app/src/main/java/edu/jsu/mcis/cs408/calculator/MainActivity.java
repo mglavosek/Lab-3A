@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int ROWS = 4;
     private static final int COLS = 5;
 
-    private ActivityMainBinding binding; // Replace with your generated ViewBinding class
+    private ActivityMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
