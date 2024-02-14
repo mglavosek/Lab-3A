@@ -1,138 +1,103 @@
 package edu.jsu.mcis.cs408.calculator;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintSet;
+
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
+
+import edu.jsu.mcis.cs408.calculator.databinding.ActivityMainBinding;
+
 
 public class MainActivity extends AppCompatActivity {
-
-    private static final int ROWS = 5;
-    private static final int COLS = 4;
-
-    private ConstraintLayout constraintLayout;
-
+    private static final int ROWS = 4;
+    private static final int COLS = 5;
+    private ActivityMainBinding binding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        constraintLayout = new ConstraintLayout(this);
-        constraintLayout.setId(View.generateViewId());
-        setContentView(constraintLayout);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        setContentView(view);
 
         initLayout();
     }
 
-    private void initLayout() {
-
-        // Create and set up display TextView
-        TextView displayTextView = new TextView(this);
-        displayTextView.setId(View.generateViewId());
-        displayTextView.setTextSize(48);
-        displayTextView.setText(R.string.zero_placeholder); // Placeholder value
-        displayTextView.setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
-
-        // Add display TextView to the layout and set constraints
-        constraintLayout.addView(displayTextView);
-
-        // Set constraints for the display TextView
-        ConstraintSet displayConstraintSet = new ConstraintSet();
-        displayConstraintSet.clone(constraintLayout);
-        displayConstraintSet.connect(displayTextView.getId(), ConstraintSet.TOP, R.id.guideNorth, ConstraintSet.BOTTOM, 16);
-        displayConstraintSet.connect(displayTextView.getId(), ConstraintSet.START, R.id.guideWest, ConstraintSet.END, 16);
-        displayConstraintSet.connect(displayTextView.getId(), ConstraintSet.END, R.id.guideEast, ConstraintSet.START, 16);
-
-        // Apply constraints to the layout for the display TextView
-        displayConstraintSet.applyTo(constraintLayout);
-
-        // Arrays for button text, tag names, and button IDs
+    private void initLayout(){
         String[] buttonTexts = getResources().getStringArray(R.array.button_texts);
         String[] buttonTags = getResources().getStringArray(R.array.button_tags);
-        int[] buttonIds = new int[ROWS * COLS];
 
-        // Arrays for horizontal and vertical chains
+        // Create and configure display TextView
+        TextView displayTextView = new TextView(this);
+        displayTextView.setId(View.generateViewId());
+        displayTextView.setText(getString(R.string.zero_placeholder));
+        displayTextView.setTextSize(24); // Increase text size to 24dp
+        displayTextView.setGravity(Gravity.CENTER_VERTICAL | Gravity.END); // Right-justify
+
+        // Add display TextView to layout
+        binding.layout.addView(displayTextView);
+
+        // Apply display TextView constraints (anchored to the guidelines)
+        ConstraintSet set = new ConstraintSet();
+        set.clone(binding.layout);
+        set.connect(displayTextView.getId(), ConstraintSet.TOP, binding.guideNorth.getId(), ConstraintSet.BOTTOM, 16);
+        set.connect(displayTextView.getId(), ConstraintSet.START, binding.guideWest.getId(), ConstraintSet.END, 16);
+        set.connect(displayTextView.getId(), ConstraintSet.END, binding.guideEast.getId(), ConstraintSet.START, 16);
+        set.applyTo(binding.layout);
+
+        // Button creation
         int[][] horizontals = new int[ROWS][COLS];
         int[][] verticals = new int[COLS][ROWS];
+        int[] buttonIds = new int[ROWS * COLS];
 
-        // Initialize buttons dynamically
-        for (int i = 0; i < ROWS * COLS; i++) {
-            Button button = new Button(this);
-            button.setId(View.generateViewId());
-            button.setText(buttonTexts[i]);
-            button.setTag(buttonTags[i]);
-            button.setTextSize(24);
-
-            // Add button to the layout and set constraints
-            constraintLayout.addView(button);
-            buttonIds[i] = button.getId();
-
-            // Set constraints for the buttons
-            ConstraintSet buttonConstraintSet = new ConstraintSet();
-            buttonConstraintSet.clone(constraintLayout);
-
-            int row = i / COLS;
-            int col = i % COLS;
-
-            // Set top constraint for the first row
-            if (row == 0) {
-                buttonConstraintSet.connect(button.getId(), ConstraintSet.TOP, R.id.guideNorth, ConstraintSet.BOTTOM, 16);
-            } else {
-                buttonConstraintSet.connect(button.getId(), ConstraintSet.TOP, buttonIds[(row - 1) * COLS], ConstraintSet.BOTTOM, 16);
-            }
-
-            // Set left constraint for the first column
-            if (col == 0) {
-                buttonConstraintSet.connect(button.getId(), ConstraintSet.START, R.id.guideWest, ConstraintSet.END, 16);
-            } else {
-                buttonConstraintSet.connect(button.getId(), ConstraintSet.START, buttonIds[i - 1], ConstraintSet.END, 16);
-            }
-
-            // Populate horizontal and vertical chain arrays
-            horizontals[row][col] = button.getId();
-            verticals[col][row] = button.getId();
-
-            // Apply constraints to the layout for buttons
-            buttonConstraintSet.applyTo(constraintLayout);
-        }
-
-        // Apply horizontal chains for buttons
+        // Add buttons dynamically
         for (int i = 0; i < ROWS; i++) {
-            ConstraintSet buttonConstraintSet = new ConstraintSet();
-            buttonConstraintSet.clone(constraintLayout);
-            buttonConstraintSet.createHorizontalChain(
-                    ConstraintSet.PARENT_ID,
-                    ConstraintSet.LEFT,
-                    ConstraintSet.PARENT_ID,
-                    ConstraintSet.RIGHT,
-                    horizontals[i],
-                    null,
-                    ConstraintSet.CHAIN_PACKED
-            );
-            buttonConstraintSet.applyTo(constraintLayout);
+            for (int j = 0; j < COLS; j++) {
+                int index = i * COLS + j;
+
+                Button button = new Button(this);
+                button.setId(View.generateViewId());
+                button.setText(buttonTexts[index]);
+                button.setTag(buttonTags[index]);
+
+                // Set constraints
+                set.clone(binding.layout);
+                set.connect(button.getId(), ConstraintSet.TOP, (i == 0) ? displayTextView.getId() : buttonIds[(i - 1) * COLS], ConstraintSet.BOTTOM, 16);
+                set.connect(button.getId(), ConstraintSet.START, (j == 0) ? ConstraintSet.PARENT_ID : buttonIds[index - 1], ConstraintSet.END, 16);
+                set.connect(button.getId(), ConstraintSet.END, (j == COLS - 1) ? ConstraintSet.PARENT_ID : 0, ConstraintSet.START, 16);
+                set.connect(button.getId(), ConstraintSet.BOTTOM, (i == ROWS - 1) ? ConstraintSet.PARENT_ID : 0, ConstraintSet.TOP, 16);
+
+                set.applyTo(binding.layout);
+
+                // Add to chain arrays
+                horizontals[i][j] = button.getId();
+                verticals[j][i] = button.getId();
+                buttonIds[index] = button.getId();
+
+                // Add button to layout
+                binding.layout.addView(button);
+            }
         }
 
-        // Apply vertical chains for buttons
+        // Create horizontal and vertical chains
+        for (int i = 0; i < ROWS; i++) {
+            set.clone(binding.layout);
+            set.createHorizontalChain(ConstraintSet.PARENT_ID, ConstraintSet.LEFT, ConstraintSet.PARENT_ID, ConstraintSet.RIGHT,
+                    horizontals[i], null, ConstraintSet.CHAIN_PACKED);
+            set.applyTo(binding.layout);
+        }
+
         for (int i = 0; i < COLS; i++) {
-            ConstraintSet buttonConstraintSet = new ConstraintSet();
-            buttonConstraintSet.clone(constraintLayout);
-            buttonConstraintSet.createVerticalChain(
-                    ConstraintSet.PARENT_ID,
-                    ConstraintSet.TOP,
-                    ConstraintSet.PARENT_ID,
-                    ConstraintSet.BOTTOM,
-                    verticals[i],
-                    null,
-                    ConstraintSet.CHAIN_PACKED
-            );
-            buttonConstraintSet.applyTo(constraintLayout);
+            set.clone(binding.layout);
+            set.createVerticalChain(ConstraintSet.PARENT_ID, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM,
+                    verticals[i], null, ConstraintSet.CHAIN_PACKED);
+            set.applyTo(binding.layout);
         }
     }
 }
-
 
 
 
