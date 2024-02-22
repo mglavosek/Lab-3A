@@ -3,11 +3,12 @@ package edu.jsu.mcis.cs408.calculator;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+
 import edu.jsu.mcis.cs408.calculator.databinding.ActivityMainBinding;
+
 
 public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -16,3 +17,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(view);
     }
 }
+
+
+
