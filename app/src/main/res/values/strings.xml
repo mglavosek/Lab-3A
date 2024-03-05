@@ -20,5 +20,4 @@
     <string name="btnPlusMinus">\u00B1</string>
     <string name="btnSqrt">\u221A</string>
     <string name="btnPercent">%</string>
-    <string name="zero_placeholder">0</string>
 </resources>
